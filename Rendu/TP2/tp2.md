@@ -131,10 +131,8 @@ server=8.8.8.8
 ```html
 [miche@dhcpspoof tmp]$ jobs [1]+ Done sudo dnsmasq -C /tmp/dnsmasq.conf -q
 [miche@dhcpspoof tmp]$ ps -ef | grep dnsmasq dnsmasq 1752 1 0 14:59 ? 00:00:00
-dnsmasq -C /tmp/dnsmasq.conf -q miche 1754 1448 0 14:59 pts/0 00:00:00 grep
---color=auto dnsmasq [miche@dhcpspoof tmp]$ sudo ss -lnpu | grep dnsmasq UNCONN
-0 0 0.0.0.0:53 0.0.0.0:* users:(("dnsmasq",pid=1752,fd=4)) UNCONN 0 0 [::]:53
-[::]:* users:(("dnsmasq",pid=1752,fd=6))
+dnsmasq -C /tmp/dnsmasq.conf -q miche 1754 1448 0 14:59 pts/0 00:00:00 grep--color=auto dnsmasq
+ [miche@dhcpspoof tmp]$ sudo ss -lnpu | grep dnsmasq UNCONN 0 0 0.0.0.0:53 0.0.0.0:* users (("dnsmasq",pid=1752,fd=4)) UNCONN 0 0 [::]:53 [::]:* users:(("dnsmasq",pid=1752,fd=6))
 ```
 
 ```bash
@@ -218,3 +216,4 @@ efrei.fr resolved to 10.2.1.67
 84 bytes from 10.2.1.67 icmp_seq=1 ttl=64 time=0.996 ms
 84 bytes from 10.2.1.67 icmp_seq=2 ttl=64 time=1.567 ms
 ```
+
